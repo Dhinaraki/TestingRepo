@@ -1,0 +1,30 @@
+name: Assign Azure Policy
+
+on:
+  workflow_dispatch:   # manual trigger
+  push:
+    branches:
+      - main
+
+jobs:
+  assign-policy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Log in to Azure
+        uses: azure/login@v2
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - name: Assign Built-in Policy
+        run: |
+          az policy assignment create \
+            --name "require-tag-policy-Dhina" \
+            --display-name "Require Tag Policy-Dhina" \
+            --scope "/subscriptions/${{ secrets.AZURE_SUBSCRIPTION_ID }}/resourceGroups/${{ secrets.AZURE_RESOURCE_GROUP }}" \
+            --policy "/providers/Microsoft.Authorization/policyDefinitions/044985bb-afe1-42cd-8a36-9d5d42424537" \
+            --params @policy.parameters.json \
+            --location "centralindia"
