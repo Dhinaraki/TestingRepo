@@ -24,9 +24,16 @@
     },
     "vmSize": {
       "type": "string",
-      "defaultValue": "Standard_B1s",
+      "defaultValue": "Standard_B1ls",
       "metadata": {
         "description": "Size of the VM."
+      }
+    },
+    "location": {
+      "type": "string",
+      "defaultValue": "westus2",
+      "metadata": {
+        "description": "Region to deploy the VM."
       }
     }
   },
@@ -35,7 +42,7 @@
       "type": "Microsoft.Compute/virtualMachines",
       "apiVersion": "2021-07-01",
       "name": "[parameters('vmName')]",
-      "location": "[resourceGroup().location]",
+      "location": "[parameters('location')]",
       "properties": {
         "hardwareProfile": {
           "vmSize": "[parameters('vmSize')]"
@@ -66,7 +73,7 @@
       "type": "Microsoft.Network/networkInterfaces",
       "apiVersion": "2021-08-01",
       "name": "myVMNic",
-      "location": "[resourceGroup().location]",
+      "location": "[parameters('location')]",
       "properties": {
         "ipConfigurations": [
           {
@@ -88,7 +95,7 @@
       "type": "Microsoft.Network/publicIPAddresses",
       "apiVersion": "2021-08-01",
       "name": "myPublicIP",
-      "location": "[resourceGroup().location]",
+      "location": "[parameters('location')]",
       "properties": {
         "publicIPAllocationMethod": "Dynamic"
       }
@@ -97,7 +104,7 @@
       "type": "Microsoft.Network/virtualNetworks",
       "apiVersion": "2021-08-01",
       "name": "myVnet",
-      "location": "[resourceGroup().location]",
+      "location": "[parameters('location')]",
       "properties": {
         "addressSpace": {
           "addressPrefixes": [
