@@ -3,13 +3,13 @@
   "contentVersion": "1.0.0.0",
   "parameters": {
     "vmName": {
-      "value": "myVM01"
+      "value": "TestVM3464"
     },
     "adminUsername": {
-      "value": "azureuser"
+      "value": "Dhina3464"
     },
     "adminPassword": {
-      "value": "Dhina@12345"
+      "value": "Dhina@3464"
     },
     "vmSize": {
       "value": "Standard_B1s"
