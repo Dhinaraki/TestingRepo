@@ -98,14 +98,11 @@
       "type": "string",
       "defaultValue": "vnet-deployment"
     }
-    // ... keep your other vnet-related parameters (tags, properties, NAT, NSG arrays) as-is
   },
   "variables": {
     "subnetRef": "[parameters('subnetId')]"
-    // keep your other variables
   },
   "resources": [
-    // Public IP resource (unchanged)
     {
       "name": "[parameters('publicIpAddressName2')]",
       "type": "Microsoft.Network/publicIpAddresses",
@@ -117,10 +114,10 @@
       "sku": {
         "name": "[parameters('publicIpAddressSku')]"
       },
-      "zones": ["[parameters('virtualMachine2Zone')]"]
+      "zones": [
+        "[parameters('virtualMachine2Zone')]"
+      ]
     },
-
-    // NIC resource (unchanged)
     {
       "name": "[parameters('networkInterfaceName2')]",
       "type": "Microsoft.Network/networkInterfaces",
@@ -134,7 +131,9 @@
           {
             "name": "ipconfig1",
             "properties": {
-              "subnet": { "id": "[variables('subnetRef')]" },
+              "subnet": {
+                "id": "[variables('subnetRef')]"
+              },
               "privateIPAllocationMethod": "Dynamic",
               "publicIPAddress": {
                 "id": "[resourceId('Microsoft.Network/publicIpAddresses', parameters('publicIpAddressName2'))]"
@@ -144,8 +143,6 @@
         ]
       }
     },
-
-    // VM resource – FIXED with SSH key
     {
       "name": "[parameters('virtualMachineName2')]",
       "type": "Microsoft.Compute/virtualMachines",
@@ -155,11 +152,15 @@
         "[concat('Microsoft.Network/networkInterfaces/', parameters('networkInterfaceName2'))]"
       ],
       "properties": {
-        "hardwareProfile": { "vmSize": "[parameters('virtualMachineSize')]" },
+        "hardwareProfile": {
+          "vmSize": "[parameters('virtualMachineSize')]"
+        },
         "storageProfile": {
           "osDisk": {
-            "createOption": "fromImage",
-            "managedDisk": { "storageAccountType": "[parameters('osDiskType')]" },
+            "createOption": "FromImage",
+            "managedDisk": {
+              "storageAccountType": "[parameters('osDiskType')]"
+            },
             "deleteOption": "[parameters('osDiskDeleteOption')]"
           },
           "imageReference": {
@@ -173,7 +174,9 @@
           "networkInterfaces": [
             {
               "id": "[resourceId('Microsoft.Network/networkInterfaces', parameters('networkInterfaceName2'))]",
-              "properties": { "deleteOption": "[parameters('nicDeleteOption')]" }
+              "properties": {
+                "deleteOption": "[parameters('nicDeleteOption')]"
+              }
             }
           ]
         },
@@ -184,7 +187,9 @@
             "vTpmEnabled": "[parameters('vTPM')]"
           }
         },
-        "additionalCapabilities": { "hibernationEnabled": false },
+        "additionalCapabilities": {
+          "hibernationEnabled": false
+        },
         "osProfile": {
           "computerName": "[parameters('virtualMachineComputerName2')]",
           "adminUsername": "[parameters('adminUsername')]",
@@ -205,17 +210,24 @@
           }
         },
         "diagnosticsProfile": {
-          "bootDiagnostics": { "enabled": true }
+          "bootDiagnostics": {
+            "enabled": true
+          }
         }
       },
-      "zones": ["[parameters('virtualMachine2Zone')]"]
-    },
-
-    // Nested VNet deployment – keep as-is (your original code)
-    // ... include your Microsoft.Resources/deployments for VNet + conditional NAT/NSG resources
+      "zones": [
+        "[parameters('virtualMachine2Zone')]"
+      ]
+    }
   ],
   "outputs": {
-    "adminUsername": { "type": "string", "value": "[parameters('adminUsername')]" },
-    "vmId": { "type": "string", "value": "[resourceId('Microsoft.Compute/virtualMachines', parameters('virtualMachineName2'))]" }
+    "adminUsername": {
+      "type": "string",
+      "value": "[parameters('adminUsername')]"
+    },
+    "vmId": {
+      "type": "string",
+      "value": "[resourceId('Microsoft.Compute/virtualMachines', parameters('virtualMachineName2'))]"
+    }
   }
 }
