@@ -19,12 +19,12 @@ jobs:
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
 
-    - name: Assign Built-in Policy
+      - name: Assign Built-in Policy
         run: |
-    az policy assignment create \
-      --name "storage-key-expiry-policy" \
-      --display-name "Storage account keys should not be expired" \
-      --scope "/subscriptions/${{ secrets.AZURE_SUBSCRIPTION_ID }}/resourceGroups/${{ secrets.AZURE_RESOURCE_GROUP }}" \
-      --policy "/providers/Microsoft.Authorization/policyDefinitions/044985bb-afe1-42cd-8a36-9d5d42424537" \
-      --params @policy.parameters.json \
-      --location "centralindia"
+          az policy assignment create \
+            --name "storage-key-expiry-policy" \
+            --display-name "Storage account keys should not be expired" \
+            --scope "/subscriptions/${{ secrets.AZURE_SUBSCRIPTION_ID }}/resourceGroups/${{ secrets.AZURE_RESOURCE_GROUP }}" \
+            --policy "/providers/Microsoft.Authorization/policyDefinitions/044985bb-afe1-42cd-8a36-9d5d42424537" \
+            --params @policy.parameters.json \
+            --location "centralindia"
