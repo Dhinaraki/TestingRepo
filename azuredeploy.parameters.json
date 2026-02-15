@@ -9,7 +9,7 @@
       "value": "azureuser"
     },
     "adminPassword": {
-      "value": "StrongP@ssword123!"
+      "value": "Dhina@12345"
     },
     "vmSize": {
       "value": "Standard_B1s"
