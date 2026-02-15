@@ -2,140 +2,220 @@
   "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
   "contentVersion": "1.0.0.0",
   "parameters": {
-    "vmName": {
+    "location": {
       "type": "string",
-      "defaultValue": "myWin11VM",
-      "metadata": {
-        "description": "Name of the virtual machine."
-      }
+      "defaultValue": "centralindia"
+    },
+    "networkInterfaceName2": {
+      "type": "string"
+    },
+    "subnetId": {
+      "type": "string"
+    },
+    "publicIpAddressName2": {
+      "type": "string"
+    },
+    "publicIpAddressType": {
+      "type": "string",
+      "defaultValue": "Static"
+    },
+    "publicIpAddressSku": {
+      "type": "string",
+      "defaultValue": "Standard"
+    },
+    "pipDeleteOption": {
+      "type": "string",
+      "defaultValue": "Delete"
+    },
+    "virtualMachineName2": {
+      "type": "string"
+    },
+    "virtualMachineComputerName2": {
+      "type": "string"
+    },
+    "virtualMachineRG": {
+      "type": "string"
+    },
+    "osDiskType": {
+      "type": "string",
+      "defaultValue": "Premium_LRS"
+    },
+    "osDiskDeleteOption": {
+      "type": "string",
+      "defaultValue": "Delete"
+    },
+    "virtualMachineSize": {
+      "type": "string",
+      "defaultValue": "Standard_B2s"
+    },
+    "nicDeleteOption": {
+      "type": "string",
+      "defaultValue": "Delete"
     },
     "adminUsername": {
       "type": "string",
-      "defaultValue": "azureuser",
-      "metadata": {
-        "description": "Admin username for the VM."
-      }
+      "defaultValue": "azureuser"
     },
-    "adminPassword": {
+    "adminSshPublicKey": {
       "type": "securestring",
       "metadata": {
-        "description": "Admin password for the VM."
+        "description": "SSH public key string (e.g. ssh-rsa AAAAB3Nza...)"
       }
     },
-    "vmSize": {
+    "enablePeriodicAssessment": {
       "type": "string",
-      "defaultValue": "Standard_B2as_v2",
-      "metadata": {
-        "description": "Size of the VM."
-      }
+      "defaultValue": "ImageDefault"
     },
-    "location": {
+    "securityType": {
       "type": "string",
-      "defaultValue": "centralindia",
-      "metadata": {
-        "description": "Region to deploy the VM."
-      }
+      "defaultValue": "TrustedLaunch"
     },
-    "zone": {
+    "secureBoot": {
+      "type": "bool",
+      "defaultValue": true
+    },
+    "vTPM": {
+      "type": "bool",
+      "defaultValue": true
+    },
+    "virtualMachine2Zone": {
       "type": "string",
-      "defaultValue": "3",
-      "metadata": {
-        "description": "Availability Zone to deploy the VM."
-      }
+      "defaultValue": "1"
+    },
+    "vnetLocation": {
+      "type": "string",
+      "defaultValue": "centralindia"
+    },
+    "vnetVirtualNetworkName": {
+      "type": "string",
+      "defaultValue": "vnet-centralindia"
+    },
+    "vnetResourceGroupName": {
+      "type": "string",
+      "defaultValue": "my-rg-storage"
+    },
+    "vnetDeploymentName": {
+      "type": "string",
+      "defaultValue": "vnet-deployment"
     }
+    // ... keep your other vnet-related parameters (tags, properties, NAT, NSG arrays) as-is
+  },
+  "variables": {
+    "subnetRef": "[parameters('subnetId')]"
+    // keep your other variables
   },
   "resources": [
+    // Public IP resource (unchanged)
     {
-      "type": "Microsoft.Compute/virtualMachines",
-      "apiVersion": "2021-07-01",
-      "name": "[parameters('vmName')]",
+      "name": "[parameters('publicIpAddressName2')]",
+      "type": "Microsoft.Network/publicIpAddresses",
+      "apiVersion": "2023-06-01",
       "location": "[parameters('location')]",
-      "zones": [
-        "[parameters('zone')]"
-      ],
       "properties": {
-        "hardwareProfile": {
-          "vmSize": "[parameters('vmSize')]"
-        },
-        "storageProfile": {
-          "imageReference": {
-            "publisher": "MicrosoftWindowsDesktop",
-            "offer": "windows-11",
-            "sku": "win11-pro",
-            "version": "latest"
-          }
-        },
-        "osProfile": {
-          "computerName": "[parameters('vmName')]",
-          "adminUsername": "[parameters('adminUsername')]",
-          "adminPassword": "[parameters('adminPassword')]"
-        },
-        "networkProfile": {
-          "networkInterfaces": [
-            {
-              "id": "[resourceId('Microsoft.Network/networkInterfaces','myVMNic')]"
-            }
-          ]
-        }
-      }
+        "publicIPAllocationMethod": "[parameters('publicIpAddressType')]"
+      },
+      "sku": {
+        "name": "[parameters('publicIpAddressSku')]"
+      },
+      "zones": ["[parameters('virtualMachine2Zone')]"]
     },
+
+    // NIC resource (unchanged)
     {
+      "name": "[parameters('networkInterfaceName2')]",
       "type": "Microsoft.Network/networkInterfaces",
-      "apiVersion": "2021-08-01",
-      "name": "myVMNic",
+      "apiVersion": "2022-11-01",
       "location": "[parameters('location')]",
-      "zones": [
-        "[parameters('zone')]"
+      "dependsOn": [
+        "[concat('Microsoft.Network/publicIpAddresses/', parameters('publicIpAddressName2'))]"
       ],
       "properties": {
         "ipConfigurations": [
           {
             "name": "ipconfig1",
             "properties": {
-              "subnet": {
-                "id": "[resourceId('Microsoft.Network/virtualNetworks/subnets','myVnet','default')]"
-              },
+              "subnet": { "id": "[variables('subnetRef')]" },
               "privateIPAllocationMethod": "Dynamic",
               "publicIPAddress": {
-                "id": "[resourceId('Microsoft.Network/publicIPAddresses','myPublicIP')]"
+                "id": "[resourceId('Microsoft.Network/publicIpAddresses', parameters('publicIpAddressName2'))]"
               }
             }
           }
         ]
       }
     },
+
+    // VM resource – FIXED with SSH key
     {
-      "type": "Microsoft.Network/publicIPAddresses",
-      "apiVersion": "2021-08-01",
-      "name": "myPublicIP",
+      "name": "[parameters('virtualMachineName2')]",
+      "type": "Microsoft.Compute/virtualMachines",
+      "apiVersion": "2024-03-01",
       "location": "[parameters('location')]",
-      "zones": [
-        "[parameters('zone')]"
+      "dependsOn": [
+        "[concat('Microsoft.Network/networkInterfaces/', parameters('networkInterfaceName2'))]"
       ],
       "properties": {
-        "publicIPAllocationMethod": "Dynamic"
-      }
-    },
-    {
-      "type": "Microsoft.Network/virtualNetworks",
-      "apiVersion": "2021-08-01",
-      "name": "myVnet",
-      "location": "[parameters('location')]",
-      "properties": {
-        "addressSpace": {
-          "addressPrefixes": [
-            "10.0.0.0/16"
+        "hardwareProfile": { "vmSize": "[parameters('virtualMachineSize')]" },
+        "storageProfile": {
+          "osDisk": {
+            "createOption": "fromImage",
+            "managedDisk": { "storageAccountType": "[parameters('osDiskType')]" },
+            "deleteOption": "[parameters('osDiskDeleteOption')]"
+          },
+          "imageReference": {
+            "publisher": "Canonical",
+            "offer": "ubuntu-24_04-lts",
+            "sku": "server",
+            "version": "latest"
+          }
+        },
+        "networkProfile": {
+          "networkInterfaces": [
+            {
+              "id": "[resourceId('Microsoft.Network/networkInterfaces', parameters('networkInterfaceName2'))]",
+              "properties": { "deleteOption": "[parameters('nicDeleteOption')]" }
+            }
           ]
         },
-        "subnets": [
-          {
-            "name": "default",
-            "properties": {
-              "addressPrefix": "10.0.0.0/24"
+        "securityProfile": {
+          "securityType": "[parameters('securityType')]",
+          "uefiSettings": {
+            "secureBootEnabled": "[parameters('secureBoot')]",
+            "vTpmEnabled": "[parameters('vTPM')]"
+          }
+        },
+        "additionalCapabilities": { "hibernationEnabled": false },
+        "osProfile": {
+          "computerName": "[parameters('virtualMachineComputerName2')]",
+          "adminUsername": "[parameters('adminUsername')]",
+          "linuxConfiguration": {
+            "disablePasswordAuthentication": true,
+            "ssh": {
+              "publicKeys": [
+                {
+                  "path": "[concat('/home/', parameters('adminUsername'), '/.ssh/authorized_keys')]",
+                  "keyData": "[parameters('adminSshPublicKey')]"
+                }
+              ]
+            },
+            "patchSettings": {
+              "assessmentMode": "[parameters('enablePeriodicAssessment')]",
+              "patchMode": "ImageDefault"
             }
           }
-        ]
-      }
-    }
-  ]
+        },
+        "diagnosticsProfile": {
+          "bootDiagnostics": { "enabled": true }
+        }
+      },
+      "zones": ["[parameters('virtualMachine2Zone')]"]
+    },
+
+    // Nested VNet deployment – keep as-is (your original code)
+    // ... include your Microsoft.Resources/deployments for VNet + conditional NAT/NSG resources
+  ],
+  "outputs": {
+    "adminUsername": { "type": "string", "value": "[parameters('adminUsername')]" },
+    "vmId": { "type": "string", "value": "[resourceId('Microsoft.Compute/virtualMachines', parameters('virtualMachineName2'))]" }
+  }
 }

@@ -1,69 +1,25 @@
-name: Deploy Azure VM + NIC + Public IP
+name: Deploy Azure VM
 
 on:
   push:
-    branches: [ main ]
-  workflow_dispatch:          # Allows manual run from GitHub UI
-
-permissions:
-  id-token: write             # Required for OIDC
-  contents: read
+    branches:
+      - main
 
 jobs:
-  deploy:
+  build-and-deploy:
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v3
 
-      - name: Azure Login (OIDC - secure & recommended)
-        uses: azure/login@v2
+      - name: Login to Azure
+        uses: azure/login@v1
         with:
-          client-id: ${{ secrets.AZURE_CLIENT_ID }}
-          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
-          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
 
-      - name: Deploy ARM Template
-        uses: azure/bicep-deploy@v2     # Official, supports ARM JSON & Bicep, future-proof
+      - name: Deploy VM using ARM template
+        uses: azure/arm-deploy@v1
         with:
-          template: ./azuredeploy.json
-          # parameters: ./azuredeploy.parameters.json   # ← uncomment if you create one
-
-          # Or pass parameters inline (recommended for dynamic values)
-          parameters: >-
-            location=centralindia
-            virtualMachineRG=${{ secrets.AZURE_RESOURCE_GROUP }}
-            virtualMachineName2=testvm-${{ github.run_number }}
-            virtualMachineComputerName2=testubuntu
-            networkInterfaceName2=nic-${{ github.run_number }}
-            publicIpAddressName2=pip-${{ github.run_number }}
-            publicIpAddressType=Static
-            publicIpAddressSku=Standard
-            pipDeleteOption=Delete
-            virtualMachineSize=Standard_B2s
-            osDiskType=Premium_LRS
-            osDiskDeleteOption=Delete
-            nicDeleteOption=Delete
-            hibernationEnabled=false
-            adminUsername=azureuser
-            enablePeriodicAssessment=ImageDefault
-            securityType=TrustedLaunch
-            secureBoot=true
-            vTPM=true
-            virtualMachine2Zone=1
-            subnetId=${{ secrets.SUBNET_ID }}
-            vnetResourceGroupName=my-rg-storage               # adjust if different
-            vnetVirtualNetworkName=vnet-centralindia
-
-          resourceGroupName: ${{ secrets.AZURE_RESOURCE_GROUP }}
           subscriptionId: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-          deploymentName: vm-deploy-${{ github.sha }}
-          mode: incremental
-          failOnStdErr: true
-
-      - name: Show deployment info
-        if: always()
-        run: |
-          echo "Deployment → ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
-          echo "Check in Azure Portal: https://portal.azure.com/#blade/HubsExtension/Resources/resourceGroup/${{ secrets.AZURE_RESOURCE_GROUP }}/overview"
+          resourceGroupName: myResourceGroup
+          template: ./azuredeploy.json
