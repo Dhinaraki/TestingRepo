@@ -23,4 +23,3 @@ jobs:
           subscriptionId: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
           resourceGroupName: myResourceGroup
           template: ./azuredeploy.json
-          parameters: ./azuredeploy.parameters.json
