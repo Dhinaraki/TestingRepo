@@ -4,7 +4,7 @@
   "parameters": {
     "vmName": {
       "type": "string",
-      "defaultValue": "myVM",
+      "defaultValue": "myWin11VM",
       "metadata": {
         "description": "Name of the virtual machine."
       }
@@ -24,16 +24,23 @@
     },
     "vmSize": {
       "type": "string",
-      "defaultValue": "Standard_B1ls",
+      "defaultValue": "Standard_B2as_v2",
       "metadata": {
         "description": "Size of the VM."
       }
     },
     "location": {
       "type": "string",
-      "defaultValue": "westus2",
+      "defaultValue": "centralindia",
       "metadata": {
         "description": "Region to deploy the VM."
+      }
+    },
+    "zone": {
+      "type": "string",
+      "defaultValue": "3",
+      "metadata": {
+        "description": "Availability Zone to deploy the VM."
       }
     }
   },
@@ -43,15 +50,18 @@
       "apiVersion": "2021-07-01",
       "name": "[parameters('vmName')]",
       "location": "[parameters('location')]",
+      "zones": [
+        "[parameters('zone')]"
+      ],
       "properties": {
         "hardwareProfile": {
           "vmSize": "[parameters('vmSize')]"
         },
         "storageProfile": {
           "imageReference": {
-            "publisher": "Canonical",
-            "offer": "UbuntuServer",
-            "sku": "18.04-LTS",
+            "publisher": "MicrosoftWindowsDesktop",
+            "offer": "windows-11",
+            "sku": "win11-pro",
             "version": "latest"
           }
         },
@@ -74,6 +84,9 @@
       "apiVersion": "2021-08-01",
       "name": "myVMNic",
       "location": "[parameters('location')]",
+      "zones": [
+        "[parameters('zone')]"
+      ],
       "properties": {
         "ipConfigurations": [
           {
@@ -96,6 +109,9 @@
       "apiVersion": "2021-08-01",
       "name": "myPublicIP",
       "location": "[parameters('location')]",
+      "zones": [
+        "[parameters('zone')]"
+      ],
       "properties": {
         "publicIPAllocationMethod": "Dynamic"
       }
