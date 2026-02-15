@@ -1,0 +1,27 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "adminSshPublicKey": {
+      "value": "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQC... user@host"
+    },
+    "networkInterfaceName2": {
+      "value": "vm2-nic"
+    },
+    "publicIpAddressName2": {
+      "value": "vm2-pip"
+    },
+    "subnetId": {
+      "value": "/subscriptions/<subId>/resourceGroups/<rgName>/providers/Microsoft.Network/virtualNetworks/vnet-centralindia/subnets/default"
+    },
+    "virtualMachineComputerName2": {
+      "value": "vm2host"
+    },
+    "virtualMachineName2": {
+      "value": "vm2"
+    },
+    "virtualMachineRG": {
+      "value": "my-rg-compute"
+    }
+  }
+}
