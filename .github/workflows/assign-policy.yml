@@ -19,7 +19,12 @@ jobs:
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
 
-      - name: Assign Built-in Policy
-        run: |
-          az policy assignment create
-            --policy @policy.assignment.json
+
+          - name: Assign Built-in Policy
+    run: |
+     az policy assignment create \
+      --name $(jq -r .name policy.assignment.json) \
+      --display-name $(jq -r .displayName policy.assignment.json) \
+      --scope $(jq -r .scope policy.assignment.json) \
+      --policy $(jq -r .policyDefinitionId policy.assignment.json) \
+      --params @policy.parameters.json \
