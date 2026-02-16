@@ -24,6 +24,6 @@ jobs:
           az policy assignment create \
             --name "storage-key-expiry-policy" \
             --display-name "Storage account keys should not be expired" \
-            --scope "/subscriptions/<your-subscription-id>/resourceGroups/<your-resource-group>" \
+            --scope "/subscriptions/d75c0c5c-debd-4cc4-b516-6f2ecb82221a/resourceGroups/myResourceGroup" \
             --policy "/providers/Microsoft.Authorization/policyDefinitions/044985bb-afe1-42cd-8a36-9d5d42424537" \
             --params @policy.parameters.json \
