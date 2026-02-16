@@ -23,8 +23,7 @@ jobs:
         run: |
           az policy assignment create \
             --name "storage-public-policy" \
-            --display-name "Storage accounts should restrict network access" \
+            --display-name "Storage accounts should restrict network access-Dhina" \
             --scope "/subscriptions/d75c0c5c-debd-4cc4-b516-6f2ecb82221a" \
-            --policy "/providers/Microsoft.Authorization/policyDefinitions/34c877ad-507e-4c82-993e-3452a6e0ad3c" \
+            --policy "/subscriptions/d75c0c5c-debd-4cc4-b516-6f2ecb82221a/providers/Microsoft.Authorization/policyDefinitions/93e4beac33dd409fab95da13" \
             --params @policy.parameters.json \
-            --location "centralindia"
