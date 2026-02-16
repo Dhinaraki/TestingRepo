@@ -23,4 +23,3 @@ jobs:
         run: |
           az policy assignment create
             --policy @policy.assignment.json
-            --params @policy.parameters.json
