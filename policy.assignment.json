@@ -1,0 +1,9 @@
+{
+  "name": "storage-key-expiry-policy",
+  "displayName": "Storage account keys should not be expired",
+  "scope": "/subscriptions/d75c0c5c-debd-4cc4-b516-6f2ecb82221a/resourceGroups/my-rg-storage",
+  "policyDefinitionId": "/providers/Microsoft.Authorization/policyDefinitions/044985bb-afe1-42cd-8a36-9d5d42424537",
+  "parameters": {
+    "@policy.parameters.json"
+  }
+}
