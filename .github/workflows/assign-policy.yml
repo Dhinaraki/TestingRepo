@@ -19,12 +19,11 @@ jobs:
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
 
-
-          - name: Assign Built-in Policy
-    run: |
-     az policy assignment create \
-      --name $(jq -r .name policy.assignment.json) \
-      --display-name $(jq -r .displayName policy.assignment.json) \
-      --scope $(jq -r .scope policy.assignment.json) \
-      --policy $(jq -r .policyDefinitionId policy.assignment.json) \
-      --params @policy.parameters.json \
+      - name: Assign Built-in Policy
+        run: |
+          az policy assignment create \
+            --name "storage-key-expiry-policy" \
+            --display-name "Storage account keys should not be expired" \
+            --scope "/subscriptions/<your-subscription-id>/resourceGroups/<your-resource-group>" \
+            --policy "/providers/Microsoft.Authorization/policyDefinitions/044985bb-afe1-42cd-8a36-9d5d42424537" \
+            --params @policy.parameters.json \
