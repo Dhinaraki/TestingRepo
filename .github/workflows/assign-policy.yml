@@ -25,5 +25,5 @@ jobs:
             --name "storage-public-policy" \
             --display-name "Storage accounts should restrict network access" \
             --scope "/subscriptions/d75c0c5c-debd-4cc4-b516-6f2ecb82221a" \
-            --policy "/providers/Microsoft.Authorization/policyDefinitions/34c877ad-507e-4c82-993e-3452a6e0ad3c" \
+            --policy-definition "/providers/Microsoft.Authorization/policyDefinitions/34c877ad-507e-4c82-993e-3452a6e0ad3c" \
             --params @policy.parameters.json \
